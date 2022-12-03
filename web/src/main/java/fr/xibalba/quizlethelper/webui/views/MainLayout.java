@@ -31,6 +31,7 @@ import fr.xibalba.quizlethelper.webui.views.admin.projects.ProjectsView;
 import fr.xibalba.quizlethelper.webui.views.admin.users.UsersView;
 import fr.xibalba.quizlethelper.webui.views.projects.projectList.ProjectListView;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -58,9 +59,9 @@ public class MainLayout extends AppLayout {
 
         if (authenticatedUser.get().isPresent()) {
 
-            PatchNote[] patchNotes = SpringContext.getBean(PatchNoteService.class)
+            List<PatchNote> patchNotes = SpringContext.getBean(PatchNoteService.class)
                     .getNewerThan(authenticatedUser.get().get().getLastSeenChangelog());
-            if (patchNotes.length > 0) {
+            if (patchNotes.size() > 0) {
                 Dialog dialog = new Dialog();
                 dialog.setMaxHeight("80%");
                 dialog.setMaxWidth("50%");
@@ -102,7 +103,7 @@ public class MainLayout extends AppLayout {
                 Button button = new Button("Fermer");
                 button.addClickListener(e -> {
                     dialog.close();
-                    SpringContext.getBean(UserService.class).update(authenticatedUser.get().get().setLastSeenChangelog(patchNotes[0].getId()));
+                    SpringContext.getBean(UserService.class).update(authenticatedUser.get().get().setLastSeenChangelog(patchNotes.get(0).getId()));
                 });
                 dialogLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, button);
                 dialogLayout.add(button);

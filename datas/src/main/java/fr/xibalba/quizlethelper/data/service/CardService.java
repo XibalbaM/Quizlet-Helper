@@ -11,46 +11,61 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CardService {
 
     private final CardRepository repository;
+    private final ProjectService projectService;
 
     @Autowired
-    public CardService(CardRepository repository) {
+    public CardService(CardRepository repository, ProjectService projectService) {
         this.repository = repository;
+        this.projectService = projectService;
     }
 
     public Optional<Card> get(int id) {
         return repository.findById(id);
     }
 
-    public Card update(Card entity) {
-        return repository.save(entity);
-    }
-
     public void delete(int id) {
         repository.deleteById(id);
     }
 
-    public Page<Card> list(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Card update(Card card) {
+
+        return repository.save(card);
     }
 
-    public int count() {
-        return (int) repository.count();
+    public Card setCategories(Integer id, List<Category> categories) {
+
+        System.out.println("id =" + id);
+        System.out.println("Cards are" + repository.findAll());
+
+        Card card = repository.findById(id).get();
+        card.setCategories(categories);
+        return this.update(card);
     }
 
-    public Card create(String path, String face1, String face2, Project project, @Nullable Card parent, Category... categories) {
+    public long count() {
+        return repository.count();
+    }
+
+    public Card create(String name, String face1, String face2, Project project, @Nullable Card parent, Category... categories) {
         Card card = new Card();
-        card.setName(path);
+        card.setName(name);
         card.setFace1(face1);
         card.setFace2(face2);
-        card.setProject(project);
         card.setParent(parent);
         card.setCategories(Arrays.stream(categories).toList());
+        projectService.update(project);
         return repository.save(card);
+    }
+
+    public List<Card> findAllByProject(Project project) {
+
+        return repository.findAllByProjectId(project.getId());
     }
 }

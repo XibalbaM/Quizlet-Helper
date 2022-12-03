@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,24 +24,13 @@ public class PatchNoteService {
         return repository.findById(id);
     }
 
-    public PatchNote[] getNewerThan(int id) {
+    public List<PatchNote> getNewerThan(int id) {
         return repository.findByIdGreaterThan(id);
     }
 
     public int getLatestId() {
-        return repository.findFirstByOrderByIdDesc().orElse(0);
-    }
 
-    public PatchNote update(PatchNote entity) {
-        return repository.save(entity);
-    }
-
-    public void delete(int id) {
-        repository.deleteById(id);
-    }
-
-    public Page<PatchNote> list(Pageable pageable) {
-        return repository.findAll(pageable);
+        return repository.findFirstOrderedByIdDescending().orElse(0);
     }
 
     public int count() {

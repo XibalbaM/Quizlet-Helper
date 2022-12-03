@@ -22,10 +22,10 @@ public class Card {
     @Column(name = "name", nullable = false)
     String name;
 
-    @Column(name = "face1", nullable = false)
+    @Column(name = "face1")
     String face1;
 
-    @Column(name = "face2", nullable = false)
+    @Column(name = "face2")
     String face2;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -41,7 +41,4 @@ public class Card {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "parent_id", nullable = false)
     Card parent;
-
-    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
-    List<Card> children;
 }

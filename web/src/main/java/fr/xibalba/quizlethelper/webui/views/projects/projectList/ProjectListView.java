@@ -38,7 +38,8 @@ public class ProjectListView extends VerticalLayout {
         addProjectButton.addClickListener(e -> {
             authenticatedUser.get().ifPresent(user -> {
                 ConfirmDialog dialog = new ConfirmDialog("Créer un projet", "Voulez-vous créer un projet ?", "Créer", e1 -> {
-                    getUI().ifPresent(ui -> ui.navigate("projects/view/" + SpringContext.getBean(ProjectService.class).create("Nouveau projet", user, user).getId()));
+                    getUI().ifPresent(ui -> ui.navigate("projects/view/" + SpringContext.getBean(ProjectService.class).create("Nouveau projet",
+                            user.getId(), user.getId()).getId()));
                 }, "Annuler", e1 -> {});
                 dialog.open();
             });

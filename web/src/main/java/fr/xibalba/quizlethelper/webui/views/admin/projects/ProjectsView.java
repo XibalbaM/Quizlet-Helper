@@ -21,6 +21,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import fr.xibalba.quizlethelper.data.entity.Project;
 import fr.xibalba.quizlethelper.data.entity.User;
+import fr.xibalba.quizlethelper.data.service.CardService;
+import fr.xibalba.quizlethelper.data.service.CategoryService;
 import fr.xibalba.quizlethelper.data.service.ProjectService;
 import fr.xibalba.quizlethelper.data.service.UserService;
 import fr.xibalba.quizlethelper.webui.SpringContext;
@@ -36,9 +38,7 @@ import java.util.List;
 @RolesAllowed("ROLE_ADMIN")
 public class ProjectsView extends Div {
 
-    @Autowired
     private ProjectService projectService;
-    @Autowired
     private UserService userService;
 
     private GridPro<Project> grid;
@@ -52,7 +52,11 @@ public class ProjectsView extends Div {
     private Grid.Column<Project> categoriesColumn;
     private Grid.Column<Project> deleteColumn;
 
-    public ProjectsView() {
+    public ProjectsView(@Autowired ProjectService projectService, @Autowired UserService userService) {
+
+        this.projectService = projectService;
+        this.userService = userService;
+
         addClassName("projects-view");
         setSizeFull();
         createGrid();
@@ -146,18 +150,18 @@ public class ProjectsView extends Div {
         cardsColumn = grid.addColumn(new ComponentRenderer<>(project -> {
             Span span = new Span();
             span.setClassName("name");
-            span.setText(project.getCards().size() + "");
+            span.setText(SpringContext.getBean(CardService.class).findAllByProject(project).size() + "");
             return span;
-        })).setComparator(project -> project.getCards().size()).setHeader("Cartes");
+        })).setComparator(project -> SpringContext.getBean(CardService.class).findAllByProject(project).size()).setHeader("Cartes");
     }
 
     private void createCategoriesColumn() {
         categoriesColumn = grid.addColumn(new ComponentRenderer<>(project -> {
             Span span = new Span();
             span.setClassName("name");
-            span.setText(project.getCategories().size() + "");
+            span.setText(SpringContext.getBean(CategoryService.class).findAllByProject(project).size() + "");
             return span;
-        })).setComparator(project -> project.getCategories().size()).setHeader("Catégories");
+        })).setComparator(project -> SpringContext.getBean(CategoryService.class).findAllByProject(project).size()).setHeader("Catégories");
     }
 
     private void createDeleteColumn() {
@@ -219,7 +223,7 @@ public class ProjectsView extends Div {
         cardsFilter.setWidth("100%");
         cardsFilter.setValueChangeMode(ValueChangeMode.EAGER);
         cardsFilter.addValueChangeListener(event -> gridListDataView
-                .addFilter(project -> StringUtils.containsIgnoreCase(project.getCards().size() + "", cardsFilter.getValue())));
+                .addFilter(project -> StringUtils.containsIgnoreCase(SpringContext.getBean(CardService.class).findAllByProject(project).size() + "", cardsFilter.getValue())));
         filterRow.getCell(cardsColumn).setComponent(cardsFilter);
 
         TextField categoriesFilter = new TextField();
@@ -228,7 +232,7 @@ public class ProjectsView extends Div {
         categoriesFilter.setWidth("100%");
         categoriesFilter.setValueChangeMode(ValueChangeMode.EAGER);
         categoriesFilter.addValueChangeListener(event -> gridListDataView
-                .addFilter(project -> StringUtils.containsIgnoreCase(project.getCategories().size() + "", categoriesFilter.getValue())));
+                .addFilter(project -> StringUtils.containsIgnoreCase(SpringContext.getBean(CategoryService.class).findAllByProject(project).size() + "", categoriesFilter.getValue())));
         filterRow.getCell(categoriesColumn).setComponent(categoriesFilter);
     }
 }

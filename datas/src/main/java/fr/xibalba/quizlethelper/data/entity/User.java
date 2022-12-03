@@ -1,6 +1,9 @@
 package fr.xibalba.quizlethelper.data.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -10,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = {"ownedProjects", "projects", "password"})
+@ToString
 public class User {
 
     @Id
@@ -22,6 +25,7 @@ public class User {
     String username;
 
     @Column(name = "password", nullable = false)
+    @ToString.Exclude
     String password;
 
     @Column(name = "is_admin", nullable = false)
@@ -33,12 +37,7 @@ public class User {
     @Column(name = "last_seen_changelog", nullable = false)
     int lastSeenChangelog;
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    List<Project> ownedProjects;
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinTable(name = "users_projects",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id"))
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    @ToString.Exclude
     List<Project> projects;
 }

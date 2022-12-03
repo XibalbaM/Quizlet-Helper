@@ -43,7 +43,6 @@ public class UsersView extends Div {
     private Grid.Column<User> idColumn;
     private Grid.Column<User> nameColumn;
     private Grid.Column<User> isAdminColumn;
-    private Grid.Column<User> ownedProjectsColumn;
     private Grid.Column<User> projectsColumn;
     private Grid.Column<User> cardsCreatedColumn;
 
@@ -75,7 +74,6 @@ public class UsersView extends Div {
         createIdColumn();
         createClientColumn();
         createAdminColumn();
-        createOwnedProjectsColumn();
         createProjectsColumn();
         createCardsColumn();
     }
@@ -110,16 +108,6 @@ public class UsersView extends Div {
 
             return checkbox;
         })).setComparator(User::isAdmin).setHeader("Admin");
-    }
-
-    private void createOwnedProjectsColumn() {
-        ownedProjectsColumn = grid.addColumn(new ComponentRenderer<>(client -> {
-
-            Span span = new Span();
-            span.setClassName("name");
-            span.setText(client.getOwnedProjects().size() + "");
-            return span;
-        })).setComparator(user -> user.getOwnedProjects().size()).setHeader("Projets possédés");
     }
 
     private void createProjectsColumn() {
@@ -180,15 +168,6 @@ public class UsersView extends Div {
                     }
                 }));
         filterRow.getCell(isAdminColumn).setComponent(isAdminFilter);
-
-        NumberField ownedProjectsFilter = new NumberField();
-        ownedProjectsFilter.setPlaceholder("Filtre");
-        ownedProjectsFilter.setClearButtonVisible(true);
-        ownedProjectsFilter.setWidth("100%");
-        ownedProjectsFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        ownedProjectsFilter.addValueChangeListener(event -> gridListDataView
-                .addFilter(client -> StringUtils.containsIgnoreCase(client.getOwnedProjects().size() + "", String.valueOf(ownedProjectsFilter.getValue().intValue()))));
-        filterRow.getCell(ownedProjectsColumn).setComponent(ownedProjectsFilter);
 
         NumberField projectsFilter = new NumberField();
         projectsFilter.setPlaceholder("Filtre");

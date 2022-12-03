@@ -1,6 +1,8 @@
 package fr.xibalba.quizlethelper.data.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = {"users", "categories", "cards"})
+@ToString
 public class Project {
 
     @Id
@@ -24,18 +26,16 @@ public class Project {
     @Column(name = "code", nullable = false, unique = true)
     Integer code;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", nullable = false)
+    @ToString.Exclude
     User owner;
 
-    @ManyToMany(mappedBy = "projects", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "users_projects",
+               joinColumns = @JoinColumn(name = "project_id"),
+               inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @Fetch(value = FetchMode.SUBSELECT)
+    @ToString.Exclude
     List<User> users;
-
-    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    List<Card> cards;
-
-    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    List<Category> categories;
-
-
 }

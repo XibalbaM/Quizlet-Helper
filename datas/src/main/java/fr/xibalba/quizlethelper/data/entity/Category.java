@@ -27,5 +27,6 @@ public class Category {
     Project project;
 
     @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ToString.Exclude
     List<Card> cards;
 }

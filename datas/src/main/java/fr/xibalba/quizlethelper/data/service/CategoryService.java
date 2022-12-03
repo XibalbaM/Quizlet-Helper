@@ -10,32 +10,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CategoryService {
 
     private final CategoryRepository repository;
+    private final ProjectService projectService;
 
     @Autowired
-    public CategoryService(CategoryRepository repository) {
+    public CategoryService(CategoryRepository repository, ProjectService projectService) {
         this.repository = repository;
+        this.projectService = projectService;
     }
 
     public Optional<Category> get(int id) {
         return repository.findById(id);
-    }
-
-    public Category update(Category entity) {
-        return repository.save(entity);
-    }
-
-    public void delete(int id) {
-        repository.deleteById(id);
-    }
-
-    public Page<Category> list(Pageable pageable) {
-        return repository.findAll(pageable);
     }
 
     public int count() {
@@ -45,8 +36,13 @@ public class CategoryService {
     public Category create(String name, Project project, Card... cards) {
         Category category = new Category();
         category.setName(name);
-        category.setProject(project);
         category.setCards(Arrays.stream(cards).toList());
+        projectService.update(project);
         return repository.save(category);
+    }
+
+    public List<Category> findAllByProject(Project project) {
+
+        return repository.findAllByProjectId(project.getId());
     }
 }

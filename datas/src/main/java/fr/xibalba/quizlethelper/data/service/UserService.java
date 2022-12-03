@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,10 +26,12 @@ public class UserService{
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional(readOnly = true)
     public Optional<User> get(int id) {
         return repository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     public User get(String username) {
         return repository.findByUsername(username);
     }
@@ -41,14 +44,12 @@ public class UserService{
         repository.deleteById(id);
     }
 
-    public Page<User> list(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
+    @Transactional(readOnly = true)
     public List<User> findAll() {
         return repository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public int count() {
         return (int) repository.count();
     }
@@ -62,7 +63,7 @@ public class UserService{
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
         user.setAdmin(admin);
-        user.setLastSeenChangelog(patchNoteService.count() + 1);
+        user.setLastSeenChangelog(patchNoteService.getLatestId());
         return repository.save(user);
     }
 }
